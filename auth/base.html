@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Auth{% endblock %}
+{% block content %}
+<section class="page-shell stack">
+    <header>
+        <h1>TaskManager</h1>
+        <p class="subtitle">Organize your daily work in seconds.</p>
+    </header>
+
+    {% if message and message['content'] %}
+        <p class="alert {% if message['is_error'] %}alert-error{% else %}alert-success{% endif %}">
+            {{ message['content'] }}
+        </p>
+    {% endif %}
+
+    {% block form %}
+    <!-- Page-specific content goes here -->
+    {% endblock %}
+</section>
+{% endblock %}
+

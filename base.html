@@ -1,0 +1,350 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <title>{% block title %}TaskManager{% endblock %}</title> 
+    <style>
+        :root {
+            --bg-top: #fff8ee;
+            --bg-bottom: #f5f9ff;
+            --card: rgba(255, 255, 255, 0.85);
+            --text: #21252f;
+            --muted: #5e6472;
+            --border: rgba(33, 37, 47, 0.12);
+            --shadow: 0 18px 45px rgba(16, 32, 63, 0.12);
+            --brand: #eb5e28;
+            --brand-hover: #cf4d1b;
+            --secondary: #1f6feb;
+            --secondary-hover: #1452b8;
+            --danger: #c62828;
+            --success: #2e7d32;
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Manrope", sans-serif;
+            color: var(--text);
+            background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            z-index: -1;
+            border-radius: 999px;
+            filter: blur(4px);
+        }
+
+        body::before {
+            width: 420px;
+            height: 420px;
+            top: -120px;
+            right: -120px;
+            background: radial-gradient(circle, rgba(235, 94, 40, 0.32), rgba(235, 94, 40, 0));
+            animation: drift 12s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 360px;
+            height: 360px;
+            bottom: -140px;
+            left: -100px;
+            background: radial-gradient(circle, rgba(31, 111, 235, 0.25), rgba(31, 111, 235, 0));
+            animation: drift 10s ease-in-out infinite reverse;
+        }
+
+        main {
+            width: min(960px, 92vw);
+            margin: 40px auto 24px;
+            padding: 0;
+            animation: fade-in 0.6s ease;
+        }
+
+        .page-shell {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+        }
+
+        h1, h2 {
+            margin-top: 0;
+            font-family: "Playfair Display", serif;
+            letter-spacing: 0.2px;
+        }
+
+        h1 {
+            font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: clamp(1.35rem, 2.1vw, 1.8rem);
+            margin-bottom: 16px;
+        }
+
+        p {
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .subtitle {
+            margin-top: 0;
+            margin-bottom: 24px;
+            color: var(--muted);
+        }
+
+        .stack {
+            display: grid;
+            gap: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: rgba(31, 111, 235, 0.6);
+            box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.15);
+        }
+
+        .form-card {
+            display: grid;
+            gap: 14px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        button {
+            border: none;
+            border-radius: 11px;
+            padding: 10px 16px;
+            font-weight: 700;
+            font-family: inherit;
+            color: #ffffff;
+            background: var(--brand);
+            cursor: pointer;
+            transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 16px rgba(235, 94, 40, 0.25);
+        }
+
+        button:hover {
+            background: var(--brand-hover);
+            transform: translateY(-1px);
+        }
+
+        button.secondary {
+            background: var(--secondary);
+            box-shadow: 0 8px 16px rgba(31, 111, 235, 0.22);
+        }
+
+        button.secondary:hover {
+            background: var(--secondary-hover);
+        }
+
+        button.danger {
+            background: var(--danger);
+            box-shadow: 0 8px 16px rgba(198, 40, 40, 0.2);
+        }
+
+        .alert {
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-weight: 600;
+            animation: slide-down 0.35s ease;
+        }
+
+        .alert-error {
+            color: #7f1d1d;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            color: #14532d;
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 540px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid rgba(33, 37, 47, 0.08);
+        }
+
+        th {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #3d475f;
+            background: rgba(31, 111, 235, 0.08);
+        }
+
+        .status-pill {
+            display: inline-block;
+            font-size: 0.86rem;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 999px;
+        }
+
+        .status-done {
+            color: #14532d;
+            background: #dcfce7;
+        }
+
+        .status-open {
+            color: #7f1d1d;
+            background: #fee2e2;
+        }
+
+        .inline-input {
+            min-width: 200px;
+            padding: 8px 10px;
+            border-radius: 10px;
+        }
+
+        .status-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-row {
+            margin-top: 0;
+            gap: 8px;
+        }
+
+        .action-row form {
+            margin: 0;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 8px 20px 28px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-down {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes drift {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(16px);
+            }
+        }
+
+        @media (max-width: 640px) {
+            main {
+                margin-top: 24px;
+            }
+
+            .page-shell {
+                padding: 18px;
+                border-radius: 14px;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .button-row form,
+            .button-row button {
+                width: 100%;
+            }
+        }
+    </style>
+</head> 
+<body> 
+    <main> 
+        {% block content %} 
+        <!-- Page-specific content goes here --> 
+        {% endblock %} 
+    </main> 
+    <footer> 
+        <p>{% block footer %}© 2024 TaskManager{% endblock %}</p> 
+    </footer> 
+</body> 
+</html>
+

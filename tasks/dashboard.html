@@ -1,0 +1,66 @@
+{% extends "tasks/base.html" %} 
+{% block title %}User Tasks{% endblock %} 
+{% block task %} 
+<h2>Your Tasks, {{ session['username'] }}</h2> 
+{% if tasks %} 
+    <div class="table-wrap">
+        <table> 
+            <thead> 
+                <tr> 
+                    <th>Title</th> 
+                    <th>Created At</th> 
+                    <th>Status</th> 
+                    <th>Actions</th>
+                </tr> 
+            </thead> 
+            <tbody> 
+                {% for task_id, task_info in tasks.items() %} 
+                <tr> 
+                    <td>
+                        <input
+                            class="inline-input"
+                            type="text"
+                            name="title"
+                            value="{{ task_info.title }}"
+                            form="edit-task-{{ task_id }}"
+                            required
+                        >
+                    </td> 
+                    <td>{{ task_info.created_at }}</td> 
+                    <td>
+                        <label class="status-toggle">
+                            <input
+                                type="checkbox"
+                                name="is_completed"
+                                form="edit-task-{{ task_id }}"
+                                {% if task_info.is_completed %}checked{% endif %}
+                            >
+                            <span class="status-pill {% if task_info.is_completed %}status-done{% else %}status-open{% endif %}">
+                                {% if task_info.is_completed %}Completed{% else %}Not Completed{% endif %}
+                            </span>
+                        </label>
+                    </td> 
+                    <td>
+                        <div class="button-row action-row">
+                            <form id="edit-task-{{ task_id }}" action="{{ url_for('tasks.edit_task', task_id=task_id) }}" method="post"></form>
+                                <button class="secondary" type="submit" form="edit-task-{{ task_id }}">Save</button>
+                            <form action="{{ url_for('tasks.delete_task', task_id=task_id) }}" method="post">
+                            <button class="danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr> 
+                {% endfor %} 
+            </tbody> 
+        </table>
+    </div>
+{% else %} 
+    <p>No tasks available. Create a new task below.</p> 
+{% endif %} 
+<div class="button-row"> 
+    <form action="{{ url_for('tasks.get_create_task_page') }}" method="get"> 
+        <button class="secondary" type="submit">Create New Task</button> 
+    </form> 
+</div> 
+{% endblock %}
+

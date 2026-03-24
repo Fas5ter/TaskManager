@@ -1,0 +1,20 @@
+{% extends "tasks/base.html" %} 
+{% block title %}Create New Task{% endblock %} 
+{% block task %} 
+<h2>Create a New Task</h2> 
+<form class="form-card" action="{{ url_for('tasks.create_task') }}" method="post"> 
+    <div>
+        <label for="title">Task Title:</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div class="button-row">
+        <button type="submit">Create Task</button>
+    </div>
+</form> 
+<div class="button-row"> 
+    <form action="{{ url_for('tasks.list_tasks') }}" method="get"> 
+        <button class="secondary" type="submit">Back to Tasks</button> 
+    </form> 
+</div> 
+{% endblock %}
+

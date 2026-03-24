@@ -1,0 +1,20 @@
+{% extends "tasks/base.html" %} 
+{% block title %}Edit Task{% endblock %} 
+{% block task %}
+<h2>Edit Task</h2>
+<form class="form-card" action="{{ url_for('tasks.edit_task', task_id=task
+.id) }}" method="post">
+    <div>
+        <label for="title">Task Title:</label>
+        <input type="text" id="title" name="title" value="{{ task.title }}" required>
+    </div>
+    <div class="button-row">
+        <button type="submit">Update Task</button>
+    </div>
+</form>
+<div class="button-row">
+    <form action="{{ url_for('tasks.list_tasks') }}" method="get">
+        <button class="secondary" type="submit">Back to Tasks</button>
+    </form>
+</div>
+{% endblock %}
